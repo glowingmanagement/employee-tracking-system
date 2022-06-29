@@ -17,6 +17,7 @@ const init = async () => {
         "Add Role",
         "View All Departments",
         "Add Department",
+        "Quit",
       ],
     },
   ];
