@@ -19,6 +19,8 @@
   "homepage": "https://github.com/glowingmanagement/employee-tracking-system#readme",
   "dependencies": {
     "console.table": "^0.10.0",
-    "inquirer": "^8.0.0"
+    "dotenv": "^16.0.1",
+    "inquirer": "^8.0.0",
+    "mysql2": "^2.3.3"
   }
 }

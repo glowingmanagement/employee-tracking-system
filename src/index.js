@@ -1,6 +1,17 @@
 const inquirer = require("inquirer");
+require("dotenv").config();
+const mysql = require("mysql2/promise");
+
+// link to database
+const config = {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+};
 
 const init = async () => {
+  const db = await mysql.createConnection(config);
   // declare variables
   let inProgress = true;
 
@@ -22,9 +33,24 @@ const init = async () => {
     },
   ];
 
-  const userChoice = await inquirer.prompt(choiceQuestions);
+  while (inProgress) {
+    const userChoice = await inquirer.prompt(choiceQuestions);
 
-  console.log(userChoice);
+    if (userChoice.choiceOption == "View All Employees") {
+      const employees = await getAllEmployees(db);
+      console.table(employees);
+    }
+
+    if (userChoice.choiceOption == "Quit") {
+      console.log("Thank you for using this application");
+      inProgress = false;
+    }
+  }
+};
+
+const getAllEmployees = async (db) => {
+  const [results] = await db.query("SELECT * FROM employee");
+  return results;
 };
 
 init();
