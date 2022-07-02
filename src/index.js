@@ -20,7 +20,6 @@ const getQueries = async () => {
 
   const closeConnection = async () => {
     await db.end();
-    console.log("HERE");
   };
 
   return { executeQuery, closeConnection };
@@ -58,11 +57,11 @@ const init = async () => {
           name: "Add New Role",
         },
         {
-          value: "viewRoles",
+          value: "getRoles",
           name: "View All Roles",
         },
         {
-          value: "viewDepartment",
+          value: "getDepartment",
           name: "View All Departments",
         },
         {
@@ -81,11 +80,17 @@ const init = async () => {
     const { choiceOption } = await inquirer.prompt(choiceQuestions);
 
     if (choiceOption === "getEmployees") {
+      // not finished. Remove columns and get manager name
       const employees = await executeQuery(
         "SELECT * FROM employee JOIN (role JOIN department ON role.department_id = department.id) ON employee.role_id = role.id"
       );
 
       console.table(employees);
+    }
+
+    if (choiceOption === "getDepartment") {
+      const departments = await executeQuery("SELECT * FROM department");
+      console.table(departments);
     }
 
     if (choiceOption === "quit") {
