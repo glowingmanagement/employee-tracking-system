@@ -10,8 +10,24 @@ const config = {
   database: process.env.DB_NAME,
 };
 
-const init = async () => {
+const getQueries = async () => {
   const db = await mysql.createConnection(config);
+
+  const executeQuery = async (query) => {
+    const [results] = await db.query(query);
+    return results;
+  };
+
+  const closeConnection = async () => {
+    await db.end();
+    console.log("HERE");
+  };
+
+  return { executeQuery, closeConnection };
+};
+
+const init = async () => {
+  const { executeQuery, closeConnection } = await getQueries();
   // declare variables
   let inProgress = true;
 
@@ -21,36 +37,63 @@ const init = async () => {
       message: "What would you like to do?",
       name: "choiceOption",
       choices: [
-        "View All Employees",
-        "Add Employee",
-        "Update Employee Role",
-        "View All Roles",
-        "Add Role",
-        "View All Departments",
-        "Add Department",
-        "Quit",
+        {
+          value: "getEmployees",
+          name: "View All Employees",
+        },
+        {
+          value: "addEmployees",
+          name: "Add New Employee",
+        },
+        {
+          value: "updateRole",
+          name: "Update Employee Role",
+        },
+        {
+          value: "viewRoles",
+          name: "View All Roles",
+        },
+        {
+          value: "addRole",
+          name: "Add New Role",
+        },
+        {
+          value: "viewRoles",
+          name: "View All Roles",
+        },
+        {
+          value: "viewDepartment",
+          name: "View All Departments",
+        },
+        {
+          value: "addDepartment",
+          name: "Add New Department",
+        },
+        {
+          value: "quit",
+          name: "Quit Application",
+        },
       ],
     },
   ];
 
   while (inProgress) {
-    const userChoice = await inquirer.prompt(choiceQuestions);
+    const { choiceOption } = await inquirer.prompt(choiceQuestions);
 
-    if (userChoice.choiceOption == "View All Employees") {
-      const employees = await getAllEmployees(db);
+    if (choiceOption === "getEmployees") {
+      const employees = await executeQuery(
+        "SELECT * FROM employee JOIN (role JOIN department ON role.department_id = department.id) ON employee.role_id = role.id"
+      );
+
       console.table(employees);
     }
 
-    if (userChoice.choiceOption == "Quit") {
-      console.log("Thank you for using this application");
+    if (choiceOption === "quit") {
+      await closeConnection();
       inProgress = false;
+      console.log("Thank you for using this application");
     }
   }
-};
-
-const getAllEmployees = async (db) => {
-  const [results] = await db.query("SELECT * FROM employee");
-  return results;
 };
 
 init();
