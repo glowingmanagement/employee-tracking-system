@@ -93,6 +93,13 @@ const init = async () => {
       console.table(departments);
     }
 
+    if (choiceOption === "getRoles") {
+      const roles = await executeQuery(
+        "SELECT * FROM role JOIN department ON role.department_id = department.id"
+      );
+      console.table(roles);
+    }
+
     if (choiceOption === "quit") {
       await closeConnection();
       inProgress = false;
