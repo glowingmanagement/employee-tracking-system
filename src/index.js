@@ -80,10 +80,12 @@ const init = async () => {
     const { choiceOption } = await inquirer.prompt(choiceQuestions);
 
     if (choiceOption === "getEmployees") {
-      // not finished. Remove columns and get manager name
-      const employees = await executeQuery(
-        "SELECT * FROM employee JOIN (role JOIN department ON role.department_id = department.id) ON employee.role_id = role.id"
-      );
+      // // not finished. Remove columns and get manager name
+      // const employees = await executeQuery(
+      //   "SELECT * FROM employee JOIN (role JOIN department ON role.department_id = department.id) ON employee.role_id = role.id"
+      // );
+
+      // const employees = await executeQuery("SELECT * FROM employee");
 
       console.table(employees);
     }
@@ -94,9 +96,20 @@ const init = async () => {
     }
 
     if (choiceOption === "getRoles") {
-      const roles = await executeQuery(
-        "SELECT * FROM role JOIN department ON role.department_id = department.id"
-      );
+      console.log("HERE");
+      // const roles = await executeQuery("SELECT * FROM role");
+      // const roles = await executeQuery(
+      //   "SELECT * FROM role JOIN department ON role.department_id = department.id"
+      // );
+
+      const roles = await executeQuery(`SELECT
+      role.id,
+      role.title AS role,
+      role.salary,
+      department.dep_name AS department
+      FROM role
+      INNER JOIN department ON department.id = role.department_id`);
+
       console.table(roles);
     }
 
