@@ -1,8 +1,8 @@
 const inquirer = require("inquirer");
-const { departmentQuestion } = require("../questions");
+const { getDepartmentQuestion, getRoleQuestion } = require("../questions");
 
 const newDepartment = async (executeQuery) => {
-  const { department } = await inquirer.prompt(departmentQuestion);
+  const { department } = await inquirer.prompt(getDepartmentQuestion());
 
   await executeQuery(
     `INSERT INTO department (dep_name) VALUES ("${department}")`
@@ -13,27 +13,8 @@ const newDepartment = async (executeQuery) => {
 };
 
 const newRole = async (currentDepartments, executeQuery) => {
-  const roleQuestions = [
-    {
-      name: "roleTitle",
-      type: "input",
-      message: "What is the role title?",
-    },
-    {
-      name: "roleSalary",
-      type: "input",
-      message: "What is the role salary?",
-    },
-    {
-      name: "roleDepartment",
-      type: "list",
-      message: "What department is this role?",
-      choices: listDepartments(currentDepartments),
-    },
-  ];
-
   const { roleTitle, roleSalary, roleDepartment } = await inquirer.prompt(
-    roleQuestions
+    getRoleQuestion(currentDepartments, listDepartments)
   );
 
   await executeQuery(

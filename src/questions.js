@@ -40,15 +40,43 @@ const choiceQuestions = [
   },
 ];
 
-const departmentQuestion = [
-  {
-    name: "department",
-    type: "input",
-    message: "What is the department name?",
-  },
-];
+const getDepartmentQuestion = () => {
+  const departmentQuestions = [
+    {
+      name: "department",
+      type: "input",
+      message: "What is the department name?",
+    },
+  ];
+
+  return departmentQuestions;
+};
+
+const getRoleQuestion = (currentDepartments, listDepartments) => {
+  const roleQuestions = [
+    {
+      name: "roleTitle",
+      type: "input",
+      message: "What is the role title?",
+    },
+    {
+      name: "roleSalary",
+      type: "input",
+      message: "What is the role salary?",
+    },
+    {
+      name: "roleDepartment",
+      type: "list",
+      message: "What department is this role?",
+      choices: listDepartments(currentDepartments),
+    },
+  ];
+
+  return roleQuestions;
+};
 
 module.exports = {
   choiceQuestions,
-  departmentQuestion,
+  getDepartmentQuestion,
+  getRoleQuestion,
 };
