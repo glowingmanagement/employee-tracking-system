@@ -2,7 +2,7 @@ const inquirer = require("inquirer");
 require("dotenv").config();
 const mysql = require("mysql2/promise");
 const { getDepartments, getRoles, getEmployees } = require("./utils/viewData");
-const { newDepartment } = require("./utils/addData");
+const { newDepartment, newRole } = require("./utils/addData");
 const { choiceQuestions } = require("./questions");
 
 // link to database
@@ -53,7 +53,8 @@ const init = async () => {
     }
 
     if (choiceOption === "addRole") {
-      const roleInfo = newRole();
+      const currentDepartments = await getDepartments(executeQuery);
+      const roleInfo = await newRole(currentDepartments, executeQuery);
     }
 
     if (choiceOption === "getDepartment") {
@@ -65,37 +66,12 @@ const init = async () => {
       console.log(departmentInfo);
     }
 
-    if (choiceOption === "addRole") {
-      const roleInfo = await newRole();
-    }
-
     if (choiceOption === "quit") {
       await closeConnection();
       inProgress = false;
       console.log("Thank you for using this application");
     }
   }
-};
-
-const newRole = () => {
-  const roleQuestions = [
-    {
-      name: "roleTitle",
-      type: "input",
-      message: "What is the role title?",
-    },
-    {
-      name: "roleSalary",
-      type: "input",
-      message: "What is the role salary?",
-    },
-    {
-      name: "roleDepartment",
-      type: "list",
-      // choices: ,
-      message: "Which department is this role?",
-    },
-  ];
 };
 
 init();
