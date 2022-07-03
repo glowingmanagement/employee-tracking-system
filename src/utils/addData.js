@@ -34,9 +34,15 @@ const newEmployee = async (currentRoles, currentEmployees, executeQuery) => {
     getEmployeeQuestions(currentRoles, currentEmployees)
   );
 
-  await executeQuery(
-    `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${firstName}", "${lastName}", "${role}", "${manager}")`
-  );
+  if (manager === "NULL") {
+    await executeQuery(
+      `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${firstName}", "${lastName}", "${role}", NULL)`
+    );
+  } else {
+    await executeQuery(
+      `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${firstName}", "${lastName}", "${role}", "${manager}")`
+    );
+  }
 
   const message = `${firstName} ${lastName} successfully added as an employee`;
   return message;
