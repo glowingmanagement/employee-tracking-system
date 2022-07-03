@@ -1,5 +1,9 @@
 const inquirer = require("inquirer");
-const { getDepartmentQuestion, getRoleQuestion } = require("../questions");
+const {
+  getDepartmentQuestion,
+  getRoleQuestion,
+  getEmployeeQuestions,
+} = require("../questions");
 
 const newDepartment = async (executeQuery) => {
   const { department } = await inquirer.prompt(getDepartmentQuestion());
@@ -14,7 +18,7 @@ const newDepartment = async (executeQuery) => {
 
 const newRole = async (currentDepartments, executeQuery) => {
   const { roleTitle, roleSalary, roleDepartment } = await inquirer.prompt(
-    getRoleQuestion(currentDepartments, listDepartments)
+    getRoleQuestion(currentDepartments)
   );
 
   await executeQuery(
@@ -25,16 +29,21 @@ const newRole = async (currentDepartments, executeQuery) => {
   return message;
 };
 
-const newEmployee = () => {};
+const newEmployee = async (currentRoles, currentEmployees, executeQuery) => {
+  const { firstName, lastName, role, manager } = await inquirer.prompt(
+    getEmployeeQuestions(currentRoles, currentEmployees)
+  );
 
-const listDepartments = (currentDepartments) => {
-  return currentDepartments.map((department) => ({
-    name: department.dep_name,
-    value: department.id,
-  }));
+  await executeQuery(
+    `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ("${firstName}", "${lastName}", "${role}", "${manager}")`
+  );
+
+  const message = `${firstName} ${lastName} successfully added as an employee`;
+  return message;
 };
 
 module.exports = {
   newDepartment,
   newRole,
+  newEmployee,
 };

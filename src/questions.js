@@ -52,7 +52,7 @@ const getDepartmentQuestion = () => {
   return departmentQuestions;
 };
 
-const getRoleQuestion = (currentDepartments, listDepartments) => {
+const getRoleQuestion = (currentDepartments) => {
   const roleQuestions = [
     {
       name: "roleTitle",
@@ -75,8 +75,73 @@ const getRoleQuestion = (currentDepartments, listDepartments) => {
   return roleQuestions;
 };
 
+const getEmployeeQuestions = (currentRoles, currentEmployees) => {
+  const employeeQuestions = [
+    {
+      name: "firstName",
+      type: "input",
+      message: "What's the employee's first name?",
+    },
+    {
+      name: "lastName",
+      type: "input",
+      message: "What's the employee's last name?",
+    },
+    {
+      name: "role",
+      type: "list",
+      message: "What is their role?",
+      choices: listRoles(currentRoles),
+    },
+    {
+      name: "manager",
+      type: "list",
+      message: "Please select relevant manager",
+      choices: listEmployees(currentEmployees),
+    },
+  ];
+
+  return employeeQuestions;
+};
+
+const listDepartments = (currentDepartments) => {
+  return currentDepartments.map((department) => ({
+    name: department.dep_name,
+    value: department.id,
+  }));
+};
+
+const listRoles = (currentRoles) => {
+  return currentRoles.map((role) => ({
+    name: role.role,
+    value: role.id,
+  }));
+};
+
+const listEmployees = (employees) => {
+  const employeeArray = employees.map((employee) => ({
+    name: employee.employee,
+    value: employee.id,
+  }));
+
+  employeeArray.push({
+    name: "No manager",
+    value: "NULL",
+  });
+
+  return employeeArray;
+};
+
+const listManagers = (managers) => {
+  return managers.map((manager) => ({
+    name: employee.employee,
+    value: employee.manager_id,
+  }));
+};
+
 module.exports = {
   choiceQuestions,
   getDepartmentQuestion,
   getRoleQuestion,
+  getEmployeeQuestions,
 };

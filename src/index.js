@@ -2,7 +2,7 @@ const inquirer = require("inquirer");
 require("dotenv").config();
 const mysql = require("mysql2/promise");
 const { getDepartments, getRoles, getEmployees } = require("./utils/viewData");
-const { newDepartment, newRole } = require("./utils/addData");
+const { newDepartment, newRole, newEmployee } = require("./utils/addData");
 const { choiceQuestions } = require("./questions");
 
 // link to database
@@ -42,8 +42,13 @@ const init = async () => {
 
     if (choiceOption === "addEmployees") {
       const currentRoles = await getRoles(executeQuery);
-      await getNewEmployee(currentRoles);
-      console.log("add employees");
+      const currentEmployees = await getEmployees(executeQuery);
+      const employeeInfo = await newEmployee(
+        currentRoles,
+        currentEmployees,
+        executeQuery
+      );
+      console.log(employeeInfo);
     }
 
     if (choiceOption === "updateRole") {
@@ -74,36 +79,6 @@ const init = async () => {
       console.log("Thank you for using this application");
     }
   }
-};
-
-const getNewEmployee = async (currentRoles) => {
-  const questions = [
-    {
-      name: "firstName",
-      type: "input",
-      message: "What's the employee's first name?",
-    },
-    {
-      name: "lastName",
-      type: "input",
-      message: "What's the employee's last name?",
-    },
-    {
-      name: "role",
-      type: "list",
-      message: "What is their role?",
-      choices: listRoles(currentRoles),
-    },
-  ];
-
-  const { firstName, lastName, role } = await inquirer.prompt(questions);
-};
-
-const listRoles = (currentRoles) => {
-  return currentRoles.map((role) => ({
-    name: role.role,
-    value: role.id,
-  }));
 };
 
 init();
