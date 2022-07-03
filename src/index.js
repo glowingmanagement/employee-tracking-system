@@ -3,6 +3,7 @@ require("dotenv").config();
 const mysql = require("mysql2/promise");
 const { getDepartments, getRoles, getEmployees } = require("./utils/viewData");
 const { newDepartment, newRole, newEmployee } = require("./utils/addData");
+const { updateRole } = require("./utils/updateData");
 const { choiceQuestions } = require("./questions");
 
 // link to database
@@ -52,7 +53,14 @@ const init = async () => {
     }
 
     if (choiceOption === "updateRole") {
-      console.log("update role");
+      const currentRoles = await getRoles(executeQuery);
+      const currentEmployees = await getEmployees(executeQuery);
+      const updateInfo = await updateRole(
+        currentRoles,
+        currentEmployees,
+        executeQuery
+      );
+      console.log(updateInfo);
     }
 
     if (choiceOption === "getRoles") {

@@ -76,6 +76,11 @@ const getRoleQuestion = (currentDepartments) => {
 };
 
 const getEmployeeQuestions = (currentRoles, currentEmployees) => {
+  const employeeChoices = listEmployees(currentEmployees);
+  employeeChoices.push({
+    name: "No manager",
+    value: "NULL",
+  });
   const employeeQuestions = [
     {
       name: "firstName",
@@ -97,7 +102,7 @@ const getEmployeeQuestions = (currentRoles, currentEmployees) => {
       name: "manager",
       type: "list",
       message: "Please select relevant manager",
-      choices: listEmployees(currentEmployees),
+      choices: employeeChoices,
     },
   ];
 
@@ -119,24 +124,31 @@ const listRoles = (currentRoles) => {
 };
 
 const listEmployees = (employees) => {
-  const employeeArray = employees.map((employee) => ({
+  const currentEmployees = employees.map((employee) => ({
     name: employee.employee,
     value: employee.id,
   }));
 
-  employeeArray.push({
-    name: "No manager",
-    value: "NULL",
-  });
-
-  return employeeArray;
+  return currentEmployees;
 };
 
-const listManagers = (managers) => {
-  return managers.map((manager) => ({
-    name: employee.employee,
-    value: employee.manager_id,
-  }));
+const getUpdateRoleQuestions = (currentEmployees, currentRoles) => {
+  const updateRoleQuestions = [
+    {
+      name: "employee",
+      type: "list",
+      message: "Please select the employee you'd like to update",
+      choices: listEmployees(currentEmployees),
+    },
+    {
+      name: "role",
+      type: "list",
+      message: "Please select the role you'd like to update",
+      choices: listRoles(currentRoles),
+    },
+  ];
+
+  return updateRoleQuestions;
 };
 
 module.exports = {
@@ -144,4 +156,5 @@ module.exports = {
   getDepartmentQuestion,
   getRoleQuestion,
   getEmployeeQuestions,
+  getUpdateRoleQuestions,
 };
