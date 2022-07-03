@@ -41,6 +41,8 @@ const init = async () => {
     }
 
     if (choiceOption === "addEmployees") {
+      const currentRoles = await getRoles(executeQuery);
+      await getNewEmployee(currentRoles);
       console.log("add employees");
     }
 
@@ -54,7 +56,7 @@ const init = async () => {
 
     if (choiceOption === "addRole") {
       const currentDepartments = await getDepartments(executeQuery);
-      const roleInfo = await newRole(currentDepartments, executeQuery);
+      await newRole(currentDepartments, executeQuery);
     }
 
     if (choiceOption === "getDepartment") {
@@ -72,6 +74,36 @@ const init = async () => {
       console.log("Thank you for using this application");
     }
   }
+};
+
+const getNewEmployee = async (currentRoles) => {
+  const questions = [
+    {
+      name: "firstName",
+      type: "input",
+      message: "What's the employee's first name?",
+    },
+    {
+      name: "lastName",
+      type: "input",
+      message: "What's the employee's last name?",
+    },
+    {
+      name: "role",
+      type: "list",
+      message: "What is their role?",
+      choices: listRoles(currentRoles),
+    },
+  ];
+
+  const { firstName, lastName, role } = await inquirer.prompt(questions);
+};
+
+const listRoles = (currentRoles) => {
+  return currentRoles.map((role) => ({
+    name: role.role,
+    value: role.id,
+  }));
 };
 
 init();

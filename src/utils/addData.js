@@ -25,6 +25,8 @@ const newRole = async (currentDepartments, executeQuery) => {
   return message;
 };
 
+const newEmployee = () => {};
+
 const listDepartments = (currentDepartments) => {
   return currentDepartments.map((department) => ({
     name: department.dep_name,
