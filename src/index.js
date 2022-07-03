@@ -49,10 +49,6 @@ const init = async () => {
           name: "Update Employee Role",
         },
         {
-          value: "viewRoles",
-          name: "View All Roles",
-        },
-        {
           value: "addRole",
           name: "Add New Role",
         },
@@ -80,12 +76,18 @@ const init = async () => {
     const { choiceOption } = await inquirer.prompt(choiceQuestions);
 
     if (choiceOption === "getEmployees") {
-      // // not finished. Remove columns and get manager name
-      // const employees = await executeQuery(
-      //   "SELECT * FROM employee JOIN (role JOIN department ON role.department_id = department.id) ON employee.role_id = role.id"
-      // );
-
-      // const employees = await executeQuery("SELECT * FROM employee");
+      const employees = await executeQuery(`SELECT e.id,
+      CONCAT(e.first_name,' ',
+             e.last_name) AS employee,
+             r.salary, r.title,
+             d.dep_name,
+            CONCAT(m.first_name,' ',
+             m.last_name) AS manager
+      FROM employee AS e
+        LEFT JOIN employee AS m 
+        ON e.manager_id = m.id INNER JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id
+        ORDER BY e.last_name;
+      `);
 
       console.table(employees);
     }
@@ -96,12 +98,6 @@ const init = async () => {
     }
 
     if (choiceOption === "getRoles") {
-      console.log("HERE");
-      // const roles = await executeQuery("SELECT * FROM role");
-      // const roles = await executeQuery(
-      //   "SELECT * FROM role JOIN department ON role.department_id = department.id"
-      // );
-
       const roles = await executeQuery(`SELECT
       role.id,
       role.title AS role,
@@ -113,12 +109,33 @@ const init = async () => {
       console.table(roles);
     }
 
+    if (choiceOption === "addDepartment") {
+      const departmentInfo = await newDepartment();
+      await executeQuery(
+        `INSERT INTO department (dep_name) VALUES ("${departmentInfo}")`
+      );
+    }
+
     if (choiceOption === "quit") {
       await closeConnection();
       inProgress = false;
       console.log("Thank you for using this application");
     }
   }
+};
+
+const newDepartment = async () => {
+  const departmentQuestion = [
+    {
+      name: "department",
+      type: "input",
+      message: "What is the department name?",
+    },
+  ];
+
+  const { department } = await inquirer.prompt(departmentQuestion);
+
+  return department;
 };
 
 init();
