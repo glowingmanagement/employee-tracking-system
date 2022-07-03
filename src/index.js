@@ -1,6 +1,9 @@
 const inquirer = require("inquirer");
 require("dotenv").config();
 const mysql = require("mysql2/promise");
+const { getDepartments, getRoles, getEmployees } = require("./utils/viewData");
+const { newDepartment } = require("./utils/addData");
+const { choiceQuestions } = require("./questions");
 
 // link to database
 const config = {
@@ -30,90 +33,40 @@ const init = async () => {
   // declare variables
   let inProgress = true;
 
-  const choiceQuestions = [
-    {
-      type: "list",
-      message: "What would you like to do?",
-      name: "choiceOption",
-      choices: [
-        {
-          value: "getEmployees",
-          name: "View All Employees",
-        },
-        {
-          value: "addEmployees",
-          name: "Add New Employee",
-        },
-        {
-          value: "updateRole",
-          name: "Update Employee Role",
-        },
-        {
-          value: "addRole",
-          name: "Add New Role",
-        },
-        {
-          value: "getRoles",
-          name: "View All Roles",
-        },
-        {
-          value: "getDepartment",
-          name: "View All Departments",
-        },
-        {
-          value: "addDepartment",
-          name: "Add New Department",
-        },
-        {
-          value: "quit",
-          name: "Quit Application",
-        },
-      ],
-    },
-  ];
-
   while (inProgress) {
     const { choiceOption } = await inquirer.prompt(choiceQuestions);
 
     if (choiceOption === "getEmployees") {
-      const employees = await executeQuery(`SELECT e.id,
-      CONCAT(e.first_name,' ',
-             e.last_name) AS employee,
-             r.salary, r.title,
-             d.dep_name,
-            CONCAT(m.first_name,' ',
-             m.last_name) AS manager
-      FROM employee AS e
-        LEFT JOIN employee AS m 
-        ON e.manager_id = m.id INNER JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id
-        ORDER BY e.last_name;
-      `);
-
-      console.table(employees);
+      console.table(await getEmployees(executeQuery));
     }
 
-    if (choiceOption === "getDepartment") {
-      const departments = await executeQuery("SELECT * FROM department");
-      console.table(departments);
+    if (choiceOption === "addEmployees") {
+      console.log("add employees");
+    }
+
+    if (choiceOption === "updateRole") {
+      console.log("update role");
     }
 
     if (choiceOption === "getRoles") {
-      const roles = await executeQuery(`SELECT
-      role.id,
-      role.title AS role,
-      role.salary,
-      department.dep_name AS department
-      FROM role
-      INNER JOIN department ON department.id = role.department_id`);
+      console.table(await getRoles(executeQuery));
+    }
 
-      console.table(roles);
+    if (choiceOption === "addRole") {
+      const roleInfo = newRole();
+    }
+
+    if (choiceOption === "getDepartment") {
+      console.table(await getDepartments(executeQuery));
     }
 
     if (choiceOption === "addDepartment") {
-      const departmentInfo = await newDepartment();
-      await executeQuery(
-        `INSERT INTO department (dep_name) VALUES ("${departmentInfo}")`
-      );
+      const departmentInfo = await newDepartment(executeQuery);
+      console.log(departmentInfo);
+    }
+
+    if (choiceOption === "addRole") {
+      const roleInfo = await newRole();
     }
 
     if (choiceOption === "quit") {
@@ -124,18 +77,25 @@ const init = async () => {
   }
 };
 
-const newDepartment = async () => {
-  const departmentQuestion = [
+const newRole = () => {
+  const roleQuestions = [
     {
-      name: "department",
+      name: "roleTitle",
       type: "input",
-      message: "What is the department name?",
+      message: "What is the role title?",
+    },
+    {
+      name: "roleSalary",
+      type: "input",
+      message: "What is the role salary?",
+    },
+    {
+      name: "roleDepartment",
+      type: "list",
+      // choices: ,
+      message: "Which department is this role?",
     },
   ];
-
-  const { department } = await inquirer.prompt(departmentQuestion);
-
-  return department;
 };
 
 init();
